@@ -1,20 +1,24 @@
 import { test, expect } from '@playwright/test';
 
-test('Deve consultar um pedido aprovado', async ({ page }) => {
-  await page.goto('http://localhost:5173/');
+/// AAA - Arrange, Act, Assert
+/* AAA é um padrão de design para escrever testes de forma clara e organizada. 
+   O Arrange é o setup, 
+   o Act é a ação 
+   e o Assert é a verificação. 
+*/
 
-  // Asserção
+test('Deve consultar um pedido aprovado', async ({ page }) => {
+  // Arrange
+  await page.goto('http://localhost:5173/');
   await expect(page.getByTestId('hero-section').getByRole('heading')).toContainText('Velô Sprint');
 
+  // Act
   await page.getByRole('link', { name: 'Consultar Pedido' }).click();
-
-  // Asserção
   await expect(page.getByRole('heading')).toContainText('Consultar Pedido');
-
   await page.getByTestId('search-order-id').fill('VLO-HEHRNA');
   await page.getByTestId('search-order-button').click();
 
-  // Asserção
+  // Assert
   await expect(page.getByTestId('order-result-id')).toContainText('VLO-HEHRNA');
   await expect(page.getByTestId('order-result-status')).toContainText('APROVADO');
 
