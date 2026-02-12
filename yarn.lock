@@ -2849,10 +2849,10 @@ sucrase@^3.35.0:
     tinyglobby "^0.2.11"
     ts-interface-checker "^0.1.9"
 
-supabase@^2.75.3:
-  version "2.75.3"
-  resolved "https://registry.yarnpkg.com/supabase/-/supabase-2.75.3.tgz#f5e59143ebbea06244a49b48bcbbaead5aec7e11"
-  integrity sha512-j2uHJfK8TE7SxL6cd+kQixwkl8H5ASBkQfOEVjf3d3XS1Wixy4UO8WudDYNVriu1KuKzsNnkkSC/jTyHNXNrcQ==
+supabase@^2.76.8:
+  version "2.76.8"
+  resolved "https://registry.yarnpkg.com/supabase/-/supabase-2.76.8.tgz#f04f47ce296f230d5afeb02a72fb54ccda73bc7d"
+  integrity sha512-Mhu3KNioxSjymdaHu6hQ/qZKzu/v1AzIEnYOOZ9+ATtSfrQNjqiMg9sivKx1vToKqcDBm3BXjmg8OX65sZW2Pw==
   dependencies:
     bin-links "^6.0.0"
     https-proxy-agent "^7.0.2"
