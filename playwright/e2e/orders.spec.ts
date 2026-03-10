@@ -67,6 +67,47 @@ test.describe('Consultar Pedido', () => {
       await expect(page.getByText(orderStatus)).toBeVisible();
   
     });
+
+    test('Deve consultar um pedido aprovado Snapshot', async ({ page }) => {
+
+      // Test Data
+      const orderNumber = 'VLO-HEHRNA';
+      const orderStatus = 'APROVADO';
+    
+      // Act
+      await page.getByRole('textbox', { name: 'Número do Pedido' }).fill(orderNumber);
+      await page.getByRole('button', { name: 'Buscar Pedido' }).click();
+      
+      // Assert do papitoQA
+      await expect(page.getByTestId(`order-result-${orderNumber}`)).toMatchAriaSnapshot(`
+        - img
+        - paragraph: Pedido
+        - paragraph: ${orderNumber}
+        - img
+        - text: ${orderStatus}
+        - img "Velô Sprint"
+        - paragraph: Modelo
+        - paragraph: Velô Sprint
+        - paragraph: Cor
+        - paragraph: Midnight Black
+        - paragraph: Interior
+        - paragraph: cream
+        - paragraph: Rodas
+        - paragraph: sport Wheels
+        - heading "Dados do Cliente" [level=4]
+        - paragraph: Nome
+        - paragraph: Eduardo Rezes
+        - paragraph: Email
+        - paragraph: duduhfoz@gmail.com
+        - paragraph: Loja de Retirada
+        - paragraph
+        - paragraph: Data do Pedido
+        - paragraph: /\\d+\\/\\d+\\/\\d+/
+        - heading "Pagamento" [level=4]
+        - paragraph: À Vista
+        - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
+        `);
+    });
   
     test('Deve consultar um pedido quando não é encontrado', async ({ page }) => {
   
