@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 import { generateOrderCode } from '../suport/helpers';
 
+import { OrderLockupPage } from '../suport/pages/OrderLockupPage'
+
 /// AAA - Arrange, Act, Assert
 /* AAA é um padrão de design para escrever testes de forma clara e organizada. 
    O Arrange é o setup, 
@@ -9,7 +11,7 @@ import { generateOrderCode } from '../suport/helpers';
    e o Assert é a verificação. 
 */
 
-test.describe('Consultar Pedido', () => {
+test.describe('Consultar Pedido', () => {  
 
   // test.beforeAll(async () => {
   //   console.log(
@@ -83,8 +85,9 @@ test.describe('Consultar Pedido', () => {
         - img
         - paragraph: Pedido
         - paragraph: ${orderNumber}
-        - img
-        - text: ${orderStatus}
+        - status:
+          - img
+          - text: ${orderStatus}
         - img "Velô Sprint"
         - paragraph: Modelo
         - paragraph: Velô Sprint
@@ -107,6 +110,12 @@ test.describe('Consultar Pedido', () => {
         - paragraph: À Vista
         - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
         `);
+
+        const statusBadge = page.getByRole('status').filter({ hasText: orderStatus })
+        await expect(statusBadge).toHaveClass('/bg-green-100/');
+        await expect(statusBadge).toHaveClass('/text-green-700/');
+        const statusIcon = statusBadge.locator('svg');
+        await expect(statusIcon).toHaveClass('/lucide-check-circle-big/');
     });
   
     test('Deve consultar um pedido quando não é encontrado', async ({ page }) => {
@@ -151,4 +160,113 @@ test.describe('Consultar Pedido', () => {
         - paragraph: Verifique o número do pedido e tente novamente   
       `);
     });
+
+    test('Deve consultar um pedido reprovado', async ({ page }) => {
+
+      // Test Data
+      const order = {
+        number: 'VLO-I70VMF',
+        status: 'REPROVADO' as const,
+        color: 'Midnight Black',
+        wheels: 'sport Wheels',
+        customer: {
+          name: 'Steve Jobs',
+          email: 'jobs@apple.com.br'
+        },
+        payment: 'À Vista'
+      }
+  
+      // Act  
+      const orderLockupPage = new OrderLockupPage(page)
+      await orderLockupPage.searchOrder(order.number)
+  
+      // Assert
+      await expect(page.getByTestId(`order-result-${order.number}`)).toMatchAriaSnapshot(`
+        - img
+        - paragraph: Pedido
+        - paragraph: ${order.number}
+        - status:
+          - img
+          - text: ${order.status}
+        - img "Velô Sprint"
+        - paragraph: Modelo
+        - paragraph: Velô Sprint
+        - paragraph: Cor
+        - paragraph: ${order.color}
+        - paragraph: Interior
+        - paragraph: cream
+        - paragraph: Rodas
+        - paragraph: ${order.wheels}
+        - heading "Dados do Cliente" [level=4]
+        - paragraph: Nome
+        - paragraph: ${order.customer.name}
+        - paragraph: Email
+        - paragraph: ${order.customer.email}
+        - paragraph: Loja de Retirada
+        - paragraph
+        - paragraph: Data do Pedido
+        - paragraph: /\\d+\\/\\d+\\/\\d+/
+        - heading "Pagamento" [level=4]
+        - paragraph: ${order.payment}
+        - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
+        `);
+  
+      // Validação do badge de status encapsulada no Page Object
+      await orderLockupPage.validateStatusBadge(order.status)
+    });
+
+    test('Deve consultar um pedido em Analise', async ({ page }) => {
+      // Test Data
+      const order = {
+        number: 'VLO-ROUZD8',
+        status: 'EM_ANALISE' as const,
+        color: 'Midnight Black',
+        wheels: 'aero wheels',
+        customer: {
+          name: 'Eduardo Rezes',
+          email: 'duduhfoz@gmail.com',
+        },
+        payment: {
+          method: 'À Vista',
+        },
+      }
+
+      // Act  
+      const orderLockupPage = new OrderLockupPage(page)
+      await orderLockupPage.searchOrder(order.number)
+
+      await expect(page.getByTestId(`order-result-${order}`)).toMatchAriaSnapshot(`
+        - img
+        - paragraph: Pedido
+        - paragraph: ${order.number}
+        - status:
+          - img
+          - text: ${order.status}
+        - img "Velô Sprint"
+        - paragraph: Modelo
+        - paragraph: Velô Sprint
+        - paragraph: Cor
+        - paragraph: ${order.color}
+        - paragraph: Interior
+        - paragraph: cream
+        - paragraph: Rodas
+        - paragraph: ${order.wheels}
+        - heading "Dados do Cliente" [level=4]
+        - paragraph: Nome
+        - paragraph: ${order.customer.name}
+        - paragraph: Email
+        - paragraph: ${order.customer.email}
+        - paragraph: Loja de Retirada
+        - paragraph
+        - paragraph: Data do Pedido
+        - paragraph: /\\d+\\/\\d+\\/\\d+/
+        - heading "Pagamento" [level=4]
+        - paragraph: ${order.payment}
+        - paragraph: /R\\$ \\d+\\.\\d+,\\d+/
+        `);
+
+      // Validação do badge de status encapsulada no Page Object
+      await orderLockupPage.validateStatusBadge(order.status)
+    });
+
 });
